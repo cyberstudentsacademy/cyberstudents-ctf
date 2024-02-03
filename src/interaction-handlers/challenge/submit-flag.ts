@@ -73,7 +73,7 @@ export class SubmitFlagHandler extends InteractionHandler {
     }
 
     const modal = new ModalBuilder()
-      .setCustomId("challenge-submit-modal:")
+      .setCustomId(`challenge-submit-modal:${interaction.id}`)
       .setTitle("Submit Flag")
       .addComponents(
         new ActionRowBuilder<TextInputBuilder>().addComponents(
@@ -88,7 +88,7 @@ export class SubmitFlagHandler extends InteractionHandler {
 
     await interaction.showModal(modal);
     const modalInteraction = await interaction
-      .awaitModalSubmit({ filter: (i) => i.user.id === interaction.user.id, time: 8.64e7 })
+      .awaitModalSubmit({ filter: (i) => i.customId.endsWith(interaction.id), time: 8.64e7 })
       .catch(() => undefined);
     if (!modalInteraction) return;
 

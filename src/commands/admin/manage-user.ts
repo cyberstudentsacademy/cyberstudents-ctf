@@ -165,7 +165,7 @@ export class RestartCommand extends Command {
         const oldPoints = buttonInteraction.customId.split(":")[1];
 
         const modal = new ModalBuilder()
-          .setCustomId("new-points")
+          .setCustomId(`new-points:${interaction.id}`)
           .setTitle("Manage user")
           .addComponents(
             new ActionRowBuilder<TextInputBuilder>().addComponents(
@@ -181,7 +181,7 @@ export class RestartCommand extends Command {
         await buttonInteraction.showModal(modal);
 
         const modalInteraction = await buttonInteraction
-          .awaitModalSubmit({ time: hide ? 390_000 : 8.64e7, filter: (i) => i.user.id === interaction.user.id })
+          .awaitModalSubmit({ time: hide ? 390_000 : 8.64e7, filter: (i) => i.customId.endsWith(interaction.id) })
           .catch(() => undefined);
         if (!modalInteraction) return;
 
@@ -208,7 +208,7 @@ export class RestartCommand extends Command {
         const oldUsername = buttonInteraction.customId.split(":")[1];
 
         const modal = new ModalBuilder()
-          .setCustomId("new-username")
+          .setCustomId(`new-username:${interaction.id}`)
           .setTitle("Manage user")
           .addComponents(
             new ActionRowBuilder<TextInputBuilder>().addComponents(
@@ -224,7 +224,7 @@ export class RestartCommand extends Command {
         await buttonInteraction.showModal(modal);
 
         const modalInteraction = await buttonInteraction
-          .awaitModalSubmit({ time: hide ? 390_000 : 8.64e7 })
+          .awaitModalSubmit({ time: hide ? 390_000 : 8.64e7, filter: (i) => i.customId.endsWith(interaction.id) })
           .catch(() => undefined);
         if (!modalInteraction) return;
 

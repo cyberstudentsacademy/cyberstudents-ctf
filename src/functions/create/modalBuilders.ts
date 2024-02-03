@@ -1,8 +1,15 @@
 import { ActionRowBuilder, ModalBuilder, TextInputBuilder, TextInputStyle } from "discord.js";
 
-export function mainFieldsModal(title: string, category: string, points: number, description: string, flags: string[]) {
+export function mainFieldsModal(
+  nonce: string,
+  title: string,
+  category: string,
+  points: number,
+  description: string,
+  flags: string[],
+) {
   return new ModalBuilder()
-    .setCustomId("modal-main-fields")
+    .setCustomId(`modal-main-fields:${nonce}`)
     .setTitle("Edit main fields")
     .addComponents(
       new ActionRowBuilder<TextInputBuilder>().addComponents(
@@ -54,9 +61,9 @@ export function mainFieldsModal(title: string, category: string, points: number,
     );
 }
 
-export function hintsModal(hint?: string | null, hintCost?: number | null) {
+export function hintsModal(nonce: string, hint?: string | null, hintCost?: number | null) {
   return new ModalBuilder()
-    .setCustomId("modal-hints")
+    .setCustomId(`modal-hints:${nonce}`)
     .setTitle("Edit hints")
     .addComponents(
       new ActionRowBuilder<TextInputBuilder>().addComponents(
@@ -82,9 +89,9 @@ export function hintsModal(hint?: string | null, hintCost?: number | null) {
     );
 }
 
-export function filesModal(files: string[]) {
+export function filesModal(nonce: string, files: string[]) {
   return new ModalBuilder()
-    .setCustomId("modal-files")
+    .setCustomId(`modal-files:${nonce}`)
     .setTitle("Edit attachments")
     .addComponents(
       new ActionRowBuilder<TextInputBuilder>().addComponents(
