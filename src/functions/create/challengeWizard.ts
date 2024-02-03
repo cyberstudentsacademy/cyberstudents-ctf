@@ -92,7 +92,9 @@ export async function handleChallengeWizard(
     switch (button.customId) {
       case "edit-main-fields": {
         button.showModal(mainFieldsModal(title, category, points, description, flags));
-        const modalInteraction = await button.awaitModalSubmit({ time: 8.64e7 }).catch(() => undefined);
+        const modalInteraction = await button
+          .awaitModalSubmit({ time: 8.64e7, filter: (i) => i.user.id === interaction.user.id })
+          .catch(() => undefined);
         if (!modalInteraction) return;
 
         const newPoints = modalInteraction?.fields.getTextInputValue("points");
@@ -122,7 +124,9 @@ export async function handleChallengeWizard(
 
       case "edit-hint": {
         button.showModal(hintsModal(hint, hintCost));
-        const modalInteraction = await button.awaitModalSubmit({ time: 8.64e7 }).catch(() => undefined);
+        const modalInteraction = await button
+          .awaitModalSubmit({ time: 8.64e7, filter: (i) => i.user.id === interaction.user.id })
+          .catch(() => undefined);
         if (!modalInteraction) return;
 
         const newHintCost = modalInteraction.fields.getTextInputValue("hint-cost");
@@ -144,7 +148,9 @@ export async function handleChallengeWizard(
 
       case "edit-files": {
         button.showModal(filesModal(files));
-        const modalInteraction = await button.awaitModalSubmit({ time: 8.64e7 }).catch(() => undefined);
+        const modalInteraction = await button
+          .awaitModalSubmit({ time: 8.64e7, filter: (i) => i.user.id === interaction.user.id })
+          .catch(() => undefined);
         if (!modalInteraction) return;
 
         files = modalInteraction.fields

@@ -181,7 +181,7 @@ export class RestartCommand extends Command {
         await buttonInteraction.showModal(modal);
 
         const modalInteraction = await buttonInteraction
-          .awaitModalSubmit({ time: hide ? 390_000 : 8.64e7 })
+          .awaitModalSubmit({ time: hide ? 390_000 : 8.64e7, filter: (i) => i.user.id === interaction.user.id })
           .catch(() => undefined);
         if (!modalInteraction) return;
 

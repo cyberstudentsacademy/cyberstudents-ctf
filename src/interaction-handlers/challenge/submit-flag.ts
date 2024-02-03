@@ -87,7 +87,9 @@ export class SubmitFlagHandler extends InteractionHandler {
       );
 
     await interaction.showModal(modal);
-    const modalInteraction = await interaction.awaitModalSubmit({ time: 8.64e7 }).catch(() => undefined);
+    const modalInteraction = await interaction
+      .awaitModalSubmit({ filter: (i) => i.user.id === interaction.user.id, time: 8.64e7 })
+      .catch(() => undefined);
     if (!modalInteraction) return;
 
     const flag = modalInteraction.fields.getTextInputValue("flag");
