@@ -24,6 +24,9 @@ jobs:
       - name: Install dependencies
         run: yarn install --frozen-lockfile
 
+      - name: Generate config file
+        run: cp config.example.json config.json
+
       - name: Build
         run: yarn build
 
