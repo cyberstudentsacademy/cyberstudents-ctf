@@ -91,9 +91,9 @@ export async function handleChallengeWizard(
   collector.on("collect", async (button) => {
     switch (button.customId) {
       case "edit-main-fields": {
-        button.showModal(mainFieldsModal(interaction.id, title, category, points, description, flags));
+        button.showModal(mainFieldsModal(button.id, title, category, points, description, flags));
         const modalInteraction = await button
-          .awaitModalSubmit({ time: 8.64e7, filter: (i) => i.customId.endsWith(interaction.id) })
+          .awaitModalSubmit({ time: 8.64e7, filter: (i) => i.customId.endsWith(button.id) })
           .catch(() => undefined);
         if (!modalInteraction) return;
 
@@ -123,9 +123,9 @@ export async function handleChallengeWizard(
       }
 
       case "edit-hint": {
-        button.showModal(hintsModal(interaction.id, hint, hintCost));
+        button.showModal(hintsModal(button.id, hint, hintCost));
         const modalInteraction = await button
-          .awaitModalSubmit({ time: 8.64e7, filter: (i) => i.customId.endsWith(interaction.id) })
+          .awaitModalSubmit({ time: 8.64e7, filter: (i) => i.customId.endsWith(button.id) })
           .catch(() => undefined);
         if (!modalInteraction) return;
 
@@ -147,9 +147,9 @@ export async function handleChallengeWizard(
       }
 
       case "edit-files": {
-        button.showModal(filesModal(interaction.id, files));
+        button.showModal(filesModal(button.id, files));
         const modalInteraction = await button
-          .awaitModalSubmit({ time: 8.64e7, filter: (i) => i.customId.endsWith(interaction.id) })
+          .awaitModalSubmit({ time: 8.64e7, filter: (i) => i.customId.endsWith(button.id) })
           .catch(() => undefined);
         if (!modalInteraction) return;
 

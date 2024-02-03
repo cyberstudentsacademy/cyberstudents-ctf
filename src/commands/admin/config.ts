@@ -58,7 +58,7 @@ export class RestartCommand extends Command {
 
     // collector.on("collect", async (buttonInteraction) => {
     //   const modal = new ModalBuilder()
-    //     .setCustomId(`new-config:${interaction.id}`)
+    //     .setCustomId(`new-config:${buttonInteraction.id}`)
     //     .setTitle("Edit configuration values")
     //     .addComponents(
     //       new ActionRowBuilder<TextInputBuilder>().addComponents(
@@ -73,7 +73,7 @@ export class RestartCommand extends Command {
     //   await buttonInteraction.showModal(modal);
 
     //   const modalInteraction = await buttonInteraction
-    //     .awaitModalSubmit({ time: hide ? 390_000 : 8.64e7, filter: (i) => i.customId.endsWith(interaction.id) })
+    //     .awaitModalSubmit({ time: hide ? 390_000 : 8.64e7, filter: (i) => i.customId.endsWith(buttonInteraction.id) })
     //     .catch(() => undefined);
     //   if (!modalInteraction) return;
 
