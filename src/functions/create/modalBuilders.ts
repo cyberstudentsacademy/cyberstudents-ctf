@@ -85,12 +85,12 @@ export function hintsModal(hint?: string | null, hintCost?: number | null) {
 export function filesModal(files: string[]) {
   return new ModalBuilder()
     .setCustomId("modal-files")
-    .setTitle("Edit files")
+    .setTitle("Edit attachments")
     .addComponents(
       new ActionRowBuilder<TextInputBuilder>().addComponents(
         new TextInputBuilder()
           .setCustomId("files")
-          .setLabel("Files (newline-separated)")
+          .setLabel("Attachments (newline-separated)")
           .setPlaceholder("Separate links with newlines. Use Discord links preferably. (Do not delete the messages)")
           .setMaxLength(1024)
           .setValue(files.join("\n"))

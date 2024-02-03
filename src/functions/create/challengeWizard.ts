@@ -40,7 +40,7 @@ export async function handleChallengeWizard(
       )
       .setFields(
         { name: "Description", value: description || "*No description set*" },
-        { name: "Files", value: files.length ? `- ${files.join("\n- ")}` : "*No files set*" },
+        { name: "Attachments", value: files.length ? `- ${files.join("\n- ")}` : "*No attachments set*" },
         { name: "Flags", value: flags.length ? `- ${flags.join("\n- ")}` : "*No flags set*" },
         { name: "Hint", value: hint || "*No hint set*" },
       )
@@ -55,7 +55,7 @@ export async function handleChallengeWizard(
     return [
       new ActionRowBuilder<ButtonBuilder>().addComponents(
         new ButtonBuilder().setCustomId("edit-main-fields").setLabel("Edit main fields").setStyle(ButtonStyle.Primary),
-        new ButtonBuilder().setCustomId("edit-files").setLabel("Edit files").setStyle(ButtonStyle.Secondary),
+        new ButtonBuilder().setCustomId("edit-files").setLabel("Edit attachments").setStyle(ButtonStyle.Secondary),
         new ButtonBuilder().setCustomId("edit-hint").setLabel("Edit hint").setStyle(ButtonStyle.Secondary),
       ),
       new ActionRowBuilder<ButtonBuilder>().addComponents(

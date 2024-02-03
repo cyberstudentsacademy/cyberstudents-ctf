@@ -26,7 +26,7 @@ export function generateMessageOptions(
 
   if (!config.publishAnonymously)
     embed.setFooter({ text: `${config.publishAnonymously ? "" : `Challenge by ${author.tag} • `}#${challenge.id}` });
-  if (challenge.files.length) embed.addFields({ name: "Files", value: `- ${challenge.files.join("\n- ")}` });
+  if (challenge.files.length) embed.addFields({ name: "Attachments", value: `- ${challenge.files.join("\n- ")}` });
 
   const solvedAttempts = challenge.attemptedChallenges.filter((attempt) => attempt.solved);
 
