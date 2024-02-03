@@ -16,16 +16,16 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Install Node.js 18
+      - name: Install Node.js 20
         uses: actions/setup-node@v3
         with:
-          node-version: 18
+          node-version: 20
 
       - name: Install dependencies
         run: yarn install --frozen-lockfile
 
       - name: Build
-        run: yarn build:ci
+        run: yarn build
 
       - name: Run ESLint
         run: yarn lint:check
