@@ -1,0 +1,76 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["fullTextSearch"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DB_CONNECTION_URL")
+}
+
+model User {
+  id        String   @id
+  createdAt DateTime @default(now()) @map("created_at")
+
+  username           String
+  anonymousMode      Boolean   @default(false) @map("anonymous_mode")
+  points             Int       @default(0)
+  lifetimePoints     Int       @default(0) @map("lifetime_points")
+  blacklisted        Boolean   @default(false)
+  flagSubmitCooldown DateTime? @map("flag_submit_cooldown")
+
+  attemptedChallenges AttemptedChallenge[]
+
+  @@map("user")
+}
+
+model ChallengeAuthor {
+  id        String   @id
+  createdAt DateTime @default(now()) @map("created_at")
+
+  authoredChallenges Challenge[]
+
+  @@map("challenge_author")
+}
+
+model AttemptedChallenge {
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String    @map("user_id")
+  createdAt DateTime  @default(now()) @map("created_at")
+  solvedAt  DateTime? @map("solved_at")
+
+  challenge   Challenge @relation(fields: [challengeId], references: [id])
+  challengeId Int       @map("challenge_id")
+
+  solved        Boolean
+  usedHint      Boolean @map("used_hint")
+  totalAttempts Int     @default(0) @map("total_attempts")
+
+  @@id([challengeId, userId])
+  @@map("attempted_challenge")
+}
+
+model Challenge {
+  id                  Int      @id @default(autoincrement())
+  createdAt           DateTime @default(now()) @map("created_at")
+  editedAt            DateTime @default(now()) @map("edited_at")
+  published           Boolean
+  publishedMessageURL String?  @map("published_message_url")
+  archived            Boolean  @default(false)
+
+  title       String
+  category    String
+  points      Int
+  hintCost    Int?     @map("hint_cost")
+  description String
+  flags       String[]
+  files       String[]
+  hint        String?
+
+  attemptedChallenges AttemptedChallenge[]
+
+  challengeAuthor   ChallengeAuthor? @relation(fields: [challengeAuthorId], references: [id])
+  challengeAuthorId String?
+
+  @@map("challenge")
+}

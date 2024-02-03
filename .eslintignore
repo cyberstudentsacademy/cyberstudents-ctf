@@ -1,0 +1,29 @@
+# Dependencies
+node_modules/
+
+# Build
+dist/
+
+# Process constants
+/process/
+
+# Environment variables
+.env
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Yarn v2
+.yarn/
+
+# VSCode
+.vscode/*
+!.vscode/extensions.json
+
+# Misc
+.DS_Store
+*.pem

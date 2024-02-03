@@ -1,0 +1,38 @@
+# Dependencies
+node_modules/
+
+# Build
+dist/
+
+# Process constants
+/process/
+
+# Environment variables
+.env
+
+# Config files
+config.json
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Yarn v2
+.yarn/cache
+.yarn/unplugged
+.yarn/build-state.yml
+.yarn/install-state.gz
+
+# VSCode
+.vscode/*
+!.vscode/extensions.json
+
+# Misc
+.DS_Store
+*.pem
+
+# Sentry Auth Token
+.sentryclirc
