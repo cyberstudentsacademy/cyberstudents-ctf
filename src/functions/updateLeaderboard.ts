@@ -1,5 +1,5 @@
 import { User } from "@prisma/client";
-import { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, Message } from "discord.js";
+import { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, escapeMarkdown, Message } from "discord.js";
 
 import colors from "../constants/colors.js";
 import { prisma } from "../index.js";
@@ -19,7 +19,7 @@ export function generateMessageOptions(
   function generateLine(user: User, index: number) {
     return [
       formatRank(index + 1),
-      user.anonymousMode ? "Anonymous Hacker" : user.username,
+      user.anonymousMode ? "Anonymous Hacker" : escapeMarkdown(user.username),
       ...(user.anonymousMode ? [] : [`<@${user.id}>`]),
       "-",
       `${new Intl.NumberFormat("en-US").format(user.points)} pts`,

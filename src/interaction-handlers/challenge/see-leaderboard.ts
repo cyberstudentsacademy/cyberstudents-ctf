@@ -1,6 +1,14 @@
 import { AttemptedChallenge, User } from "@prisma/client";
 import { InteractionHandler, InteractionHandlerTypes } from "@sapphire/framework";
-import { ActionRowBuilder, ButtonBuilder, type ButtonInteraction, ButtonStyle, EmbedBuilder, time } from "discord.js";
+import {
+  ActionRowBuilder,
+  ButtonBuilder,
+  type ButtonInteraction,
+  ButtonStyle,
+  EmbedBuilder,
+  escapeMarkdown,
+  time,
+} from "discord.js";
 
 import colors from "../../constants/colors.js";
 import { findOrCreateUser } from "../../functions/findOrCreateUser.js";
@@ -58,11 +66,11 @@ export class SubmitFlagHandler extends InteractionHandler {
       function generateLine(attempt: AttemptedChallenge & { user: User }, index: number) {
         return [
           formatRank(index + 1),
-          attempt.user.anonymousMode ? "Anonymous Hacker" : attempt.user.username,
+          attempt.user.anonymousMode ? "Anonymous Hacker" : escapeMarkdown(attempt.user.username),
           ...(attempt.user.anonymousMode ? [] : [`<@${attempt.userId}>`]),
           "-",
           time(attempt.solvedAt!, "f"),
-          attempt.usedHint ? "*" : "",
+          attempt.usedHint ? "\\*" : "",
         ].join(" ");
       }
 
