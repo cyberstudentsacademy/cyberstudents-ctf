@@ -6,8 +6,8 @@
   "scripts": {
     "start": "node .",
     "dev": "nodemon",
-    "test": "yarn build:ci && yarn lint:check && yarn format:check && yarn validate",
-    "test:fix": "yarn build:ci && yarn lint && yarn format && yarn format:prisma",
+    "test": "yarn build && yarn lint:check && yarn format:check && yarn validate",
+    "test:fix": "yarn build && yarn lint && yarn format && yarn format:prisma",
     "build": "tsc",
     "build:dev": "tsc --watch",
     "push": "prisma db push",

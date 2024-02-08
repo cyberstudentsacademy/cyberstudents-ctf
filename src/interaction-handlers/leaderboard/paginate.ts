@@ -32,13 +32,17 @@ export class SubmitFlagHandler extends InteractionHandler {
     const users = await prisma.user.findMany({
       where: { blacklisted: false, points: { gt: 0 } },
       orderBy: { points: "desc" },
+      skip: 10,
+      take: 10,
     });
+
+    const totalUsers = await prisma.user.count({ where: { blacklisted: false, points: { gt: 0 } } });
 
     const user = await findOrCreateUser(interaction.user);
     const userIndex = users.findIndex((u) => u.id === user.id);
 
     const msg = await interaction.reply({
-      ...generateMessageOptions(users, page, user, userIndex !== -1 ? userIndex : undefined),
+      ...generateMessageOptions(users, totalUsers, page, user, userIndex !== -1 ? userIndex : undefined),
       ephemeral: true,
       fetchReply: true,
     });
@@ -46,19 +50,26 @@ export class SubmitFlagHandler extends InteractionHandler {
     const collector = msg.createMessageComponentCollector({ time: 890_000 });
 
     collector.on("collect", async (buttonInteraction) => {
-      if (buttonInteraction.customId.startsWith("leaderboard-previous:")) page--;
-      else if (buttonInteraction.customId.startsWith("leaderboard-next:")) page++;
+      if (buttonInteraction.customId.startsWith("edit-leaderboard-previous:")) page--;
+      else if (buttonInteraction.customId.startsWith("edit-leaderboard-next:")) page++;
+
+      const newUsers = await prisma.user.findMany({
+        where: { blacklisted: false, points: { gt: 0 } },
+        orderBy: { points: "desc" },
+        skip: (page - 1) * 10,
+        take: 10,
+      });
+
+      const newTotalUsers = await prisma.user.count({ where: { blacklisted: false, points: { gt: 0 } } });
 
       await buttonInteraction
-        .update(generateMessageOptions(users, page, user, userIndex !== -1 ? userIndex : undefined))
+        .update(generateMessageOptions(newUsers, newTotalUsers, page, user, userIndex !== -1 ? userIndex : undefined))
         .catch(() => undefined);
     });
 
     collector.on("end", async () => {
       if (collector.endReason !== "time") return;
-      await msg
-        .edit(generateMessageOptions(users, page, user, userIndex !== -1 ? userIndex : undefined, true))
-        .catch(() => undefined);
+      await msg.edit({ content: "Timed out, please select a new page again.", components: [] }).catch(() => undefined);
     });
 
     return;

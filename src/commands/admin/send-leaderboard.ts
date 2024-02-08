@@ -44,8 +44,10 @@ export class RestartCommand extends Command {
       orderBy: { points: "desc" },
     });
 
+    const totalUsers = await prisma.user.count({ where: { blacklisted: false, points: { gt: 0 } } });
+
     try {
-      const msg = await channel.send(generateMessageOptions(users, 1));
+      const msg = await channel.send(generateMessageOptions(users, totalUsers, 1));
 
       return await interaction.reply({
         content: `Leaderboard sent: <${msg.url}>. Contact the bot owner to ensure the leaderboard gets updated.`,

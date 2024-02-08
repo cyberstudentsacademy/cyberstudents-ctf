@@ -11,10 +11,10 @@ export function formatRank(rank: number) {
 
 export function generateMessageOptions(
   users: User[],
+  totalUsers: number,
   page: number,
   user?: User | null,
   userIndex?: number | null,
-  disableButtons = false,
 ) {
   function generateLine(user: User, index: number) {
     return [
@@ -29,11 +29,14 @@ export function generateMessageOptions(
   const embed = new EmbedBuilder()
     .setColor(colors.green)
     .setTitle(`CyberStudents CTF Leaderboard - Current Round`)
-    .setDescription(users.map(generateLine).join("\n") || "It's lonely up here… - Godder")
+    .setDescription(
+      users.map((user, index) => generateLine(user, index + (page - 1) * 10)).join("\n") ||
+        "It's lonely up here… - Godder",
+    )
     .setFooter({
       text: [
-        "The leaderboard updates every minute.",
-        `Page ${page}/${Math.ceil(users.length / 10) || 1} • ${users.length} total players`,
+        ...(user ? [] : ["The leaderboard updates every minute."]),
+        `Page ${page}/${Math.ceil(totalUsers / 10) || 1} • ${totalUsers} total players`,
       ].join("\n"),
     });
 
@@ -43,15 +46,15 @@ export function generateMessageOptions(
 
   const row = new ActionRowBuilder<ButtonBuilder>().addComponents(
     new ButtonBuilder()
-      .setCustomId(`leaderboard-previous:${page}`)
+      .setCustomId(`${user ? "edit-" : ""}leaderboard-previous:${page}`)
       .setEmoji("⬅️")
       .setStyle(ButtonStyle.Secondary)
-      .setDisabled(disableButtons || page <= 1),
+      .setDisabled(page <= 1),
     new ButtonBuilder()
-      .setCustomId(`leaderboard-next:${page}`)
+      .setCustomId(`${user ? "edit-" : ""}leaderboard-next:${page}`)
       .setEmoji("➡️")
       .setStyle(ButtonStyle.Secondary)
-      .setDisabled(disableButtons || page >= Math.ceil(users.length / 10)),
+      .setDisabled(page >= Math.ceil(totalUsers / 10)),
   );
 
   return { embeds: [embed], components: [row] };
@@ -61,7 +64,10 @@ export async function updateLeaderboard(message: Message) {
   const users = await prisma.user.findMany({
     where: { blacklisted: false, points: { gt: 0 } },
     orderBy: { points: "desc" },
+    take: 10,
   });
 
-  await message.edit(generateMessageOptions(users, 1));
+  const totalUsers = await prisma.user.count({ where: { blacklisted: false, points: { gt: 0 } } });
+
+  await message.edit(generateMessageOptions(users, totalUsers, 1));
 }
