@@ -1,7 +1,7 @@
 import { ChatInputCommand } from "@sapphire/framework";
 import { Subcommand } from "@sapphire/plugin-subcommands";
 
-import { handleChallengeWizard } from "../../functions/create/challengeWizard.js";
+import { generateEmbed, handleChallengeWizard } from "../../functions/create/challengeWizard.js";
 import { challengeCache, prisma } from "../../index.js";
 
 export class BlacklistChatInputCommand extends Subcommand {
@@ -13,6 +13,7 @@ export class BlacklistChatInputCommand extends Subcommand {
       subcommands: [
         { name: "create", chatInputRun: "chatInputCreate" },
         { name: "edit", chatInputRun: "chatInputEdit" },
+        { name: "view", chatInputRun: "chatInputView" },
       ],
     });
   }
@@ -35,6 +36,21 @@ export class BlacklistChatInputCommand extends Subcommand {
                   .setDescription("Continue from a challenge or draft")
                   .setAutocomplete(true)
                   .setRequired(true),
+              ),
+          )
+          .addSubcommand((command) =>
+            command
+              .setName("view")
+              .setDescription("View an existing challenge or draft")
+              .addStringOption((command) =>
+                command
+                  .setName("challenge")
+                  .setDescription("The challenge or draft to view")
+                  .setAutocomplete(true)
+                  .setRequired(true),
+              )
+              .addBooleanOption((option) =>
+                option.setName("hide").setDescription("Whether to hide the reply (default: true)"),
               ),
           ),
       {
@@ -84,5 +100,28 @@ export class BlacklistChatInputCommand extends Subcommand {
     }
 
     return await handleChallengeWizard(existingChallenge, interaction, existingChallenge.id);
+  }
+
+  public async chatInputView(interaction: Subcommand.ChatInputCommandInteraction<"cached">) {
+    const challengeId = interaction.options.getString("challenge", true);
+    const hide = interaction.options.getBoolean("hide") ?? true;
+
+    // Create entry for the author if it doesn't exist
+    await prisma.challengeAuthor.upsert({
+      where: { id: interaction.user.id },
+      create: { id: interaction.user.id },
+      update: {},
+    });
+
+    const existingChallenge = await prisma.challenge.findUnique({ where: { id: parseInt(challengeId) || -1 } });
+
+    if (!existingChallenge) {
+      return await interaction.reply({ content: `Challenge \`${challengeId}\` doesn't exist.`, ephemeral: true });
+    }
+
+    return await interaction.reply({
+      embeds: [generateEmbed(existingChallenge, existingChallenge.id, true)],
+      ephemeral: hide,
+    });
   }
 }

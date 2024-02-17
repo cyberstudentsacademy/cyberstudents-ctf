@@ -23,34 +23,47 @@ export type ChallengeWizardOptions = {
   archived: boolean;
 };
 
+export function generateEmbed(
+  { title, category, points, flags, hint, hintCost, description, files, published }: ChallengeWizardOptions,
+  existingChallengeId?: number,
+  viewOnly = false,
+) {
+  return new EmbedBuilder()
+    .setColor(published ? colors.success : existingChallengeId ? colors.orange : colors.warning)
+    .setTitle(`${viewOnly ? "View a" : existingChallengeId ? "Edit a" : "Create a new"} challenge`)
+    .setDescription(
+      [
+        `- **Title**: ${title || "*None*"}`,
+        `- **Category**: ${category || "*None*"}`,
+        `- **Points**: ${points || "*None*"}`,
+        `- **Hint cost**: ${hintCost || "*None*"}`,
+      ].join("\n"),
+    )
+    .setFields(
+      { name: "Description", value: description || "*No description set*" },
+      { name: "Attachments", value: files.length ? `- ${files.join("\n- ")}` : "*No attachments set*" },
+      { name: "Flags", value: flags.length ? `- ${flags.join("\n- ")}` : "*No flags set*" },
+      { name: "Hint", value: hint || "*No hint set*" },
+    )
+    .setFooter({
+      text: existingChallengeId
+        ? ` ${viewOnly ? "Viewing" : "Changes are not saved automatically. Editing"} ${
+            published ? "challenge" : "draft"
+          } #${existingChallengeId}.`
+        : "Creating a new challenge.",
+    });
+}
+
 export async function handleChallengeWizard(
   { title, category, points, flags, hint, hintCost, description, files, published, archived }: ChallengeWizardOptions,
   interaction: ChatInputCommandInteraction,
   existingChallengeId?: number,
 ) {
-  function generateEmbed() {
-    return new EmbedBuilder()
-      .setColor(published ? colors.success : existingChallengeId ? colors.orange : colors.warning)
-      .setTitle(`${existingChallengeId ? "Edit a" : "Create a new"} challenge`)
-      .setDescription(
-        [
-          `- **Title**: ${title || "*None*"}`,
-          `- **Category**: ${category || "*None*"}`,
-          `- **Points**: ${points || "*None*"}`,
-          `- **Hint cost**: ${hintCost || "*None*"}`,
-        ].join("\n"),
-      )
-      .setFields(
-        { name: "Description", value: description || "*No description set*" },
-        { name: "Attachments", value: files.length ? `- ${files.join("\n- ")}` : "*No attachments set*" },
-        { name: "Flags", value: flags.length ? `- ${flags.join("\n- ")}` : "*No flags set*" },
-        { name: "Hint", value: hint || "*No hint set*" },
-      )
-      .setFooter({
-        text: `Changes are not saved automatically.${
-          existingChallengeId ? ` Editing draft #${existingChallengeId}.` : ""
-        }`,
-      });
+  function generateWizardEmbed() {
+    return generateEmbed(
+      { title, category, points, flags, hint, hintCost, description, files, published, archived },
+      existingChallengeId,
+    );
   }
 
   function generateRows() {
@@ -92,7 +105,7 @@ export async function handleChallengeWizard(
   }
 
   const message = await interaction.reply({
-    embeds: [generateEmbed()],
+    embeds: [generateWizardEmbed()],
     components: generateRows(),
     fetchReply: true,
   });
@@ -134,7 +147,7 @@ export async function handleChallengeWizard(
           .filter(Boolean);
 
         await modalInteraction.reply({ content: "Main fields have been updated.", ephemeral: true });
-        await interaction.editReply({ embeds: [generateEmbed()] });
+        await interaction.editReply({ embeds: [generateWizardEmbed()] });
         break;
       }
 
@@ -158,7 +171,7 @@ export async function handleChallengeWizard(
         hintCost = newHintCost ? parseInt(newHintCost) : undefined;
 
         await modalInteraction.reply({ content: "Hints have been updated.", ephemeral: true });
-        await interaction.editReply({ embeds: [generateEmbed()] });
+        await interaction.editReply({ embeds: [generateWizardEmbed()] });
         break;
       }
 
@@ -176,7 +189,7 @@ export async function handleChallengeWizard(
           .filter(Boolean);
 
         await modalInteraction?.reply({ content: "Files have been updated.", ephemeral: true });
-        await interaction.editReply({ embeds: [generateEmbed()] });
+        await interaction.editReply({ embeds: [generateWizardEmbed()] });
         break;
       }
 
@@ -225,7 +238,7 @@ export async function handleChallengeWizard(
 
         archived = !archived;
 
-        await interaction.editReply({ embeds: [generateEmbed()], components: generateRows() });
+        await interaction.editReply({ embeds: [generateWizardEmbed()], components: generateRows() });
         await componentInteraction.reply({
           content: `This challenge has been ${archived ? "archived" : "unarchived"}.`,
           ephemeral: true,
@@ -254,7 +267,7 @@ export async function handleChallengeWizard(
           existingChallengeId = challenge.id;
         }
 
-        await interaction.editReply({ embeds: [generateEmbed()], components: generateRows() });
+        await interaction.editReply({ embeds: [generateWizardEmbed()], components: generateRows() });
         await componentInteraction.reply({
           content: "Your changes have been saved, you can now safely discard changes.",
           ephemeral: true,
