@@ -117,12 +117,7 @@ export class RestartCommand extends Command {
               `- **Solved**: ${solvedChallenges.length} (${
                 Math.floor((solvedChallenges.length / user.attemptedChallenges.length) * 100) || 0
               }% solve rate)`,
-              solvedChallenges
-                .map(
-                  (a) =>
-                    `[${a.challenge.title}](${a.challenge.publishedMessageURL} 'Attempts: ${a.totalAttempts}\nHint used: ${a.usedHint}')`,
-                )
-                .join(", "),
+              solvedChallenges.map((a) => a.challenge.title).join(", "),
             ].join("\n"),
           },
         );

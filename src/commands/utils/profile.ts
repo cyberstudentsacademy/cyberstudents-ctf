@@ -95,24 +95,14 @@ export class InviteCommand extends Command {
           `- **Registered**: ${time(user.createdAt, "d")}`,
           `- **Points**: ${user.points} (${lifetimePoints} across all rounds)`,
           `- **Leaderboard**: #${rank} out of ${users.length} players`,
-        ].join("\n"),
-      )
-      .addFields({
-        name: "Challenges",
-        value: [
+          "### Challenges",
           `- **Attempted**: ${user.attemptedChallenges.length}`,
           `- **Solved**: ${solvedChallenges.length} (${
             Math.floor((solvedChallenges.length / user.attemptedChallenges.length) * 100) || 0
           }% solve rate)`,
-          solvedChallenges
-            .map(
-              (a) =>
-                `[${a.challenge.title}](${a.challenge.publishedMessageURL} 'Attempts: ${a.totalAttempts}\nHint used: ${a.usedHint}')`,
-            )
-            .join(", "),
+          solvedChallenges.map((a) => a.challenge.title).join(", "),
         ].join("\n"),
-        inline: true,
-      });
+      );
 
     function generateRows(user: User, anonymousModeEnabled: boolean) {
       if (interaction.user.id !== user.id) return [];
