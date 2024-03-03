@@ -62,7 +62,7 @@ export class SubmitFlagHandler extends InteractionHandler {
       return await interaction.reply({ embeds: [embed], ephemeral: true });
     }
 
-    if (attemptedChallenge?.challenge.archived) {
+    if (challenge.archived) {
       embed.setFooter({ text: "This hint was free as this challenge was part of a previous round." });
       return await interaction.reply({ embeds: [embed], ephemeral: true });
     }
