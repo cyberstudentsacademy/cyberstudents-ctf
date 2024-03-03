@@ -16,11 +16,12 @@ export type ChallengeWizardOptions = {
   points: number;
   flags: string[];
   hint?: string | null; // null to account for database result
-  hintCost?: number | null; // ^^ ditto
+  hintCost?: number | null;
   description: string;
   files: string[];
   published: boolean;
   archived: boolean;
+  publishedMessageURL?: string | null;
 };
 
 export function generateEmbed(
@@ -55,7 +56,19 @@ export function generateEmbed(
 }
 
 export async function handleChallengeWizard(
-  { title, category, points, flags, hint, hintCost, description, files, published, archived }: ChallengeWizardOptions,
+  {
+    title,
+    category,
+    points,
+    flags,
+    hint,
+    hintCost,
+    description,
+    files,
+    published,
+    archived,
+    publishedMessageURL,
+  }: ChallengeWizardOptions,
   interaction: ChatInputCommandInteraction,
   existingChallengeId?: number,
 ) {
@@ -86,22 +99,24 @@ export async function handleChallengeWizard(
         .setStyle(ButtonStyle.Secondary),
     );
 
+    const showEditPublishedMessage = published || publishedMessageURL;
+
     const publishButton = new ButtonBuilder()
       .setCustomId("publish")
-      .setLabel(published ? "Publish again" : "Publish")
-      .setStyle(published ? ButtonStyle.Secondary : ButtonStyle.Primary);
+      .setLabel(published ? "Publish again" : showEditPublishedMessage ? "Publish with new message" : "Publish")
+      .setStyle(showEditPublishedMessage ? ButtonStyle.Secondary : ButtonStyle.Primary);
 
-    if (!published) fileRow.addComponents(publishButton);
+    if (!showEditPublishedMessage) fileRow.addComponents(publishButton);
 
     const publishRow = new ActionRowBuilder<ButtonBuilder>().addComponents(
       new ButtonBuilder()
         .setCustomId("edit-published-message")
-        .setLabel("Edit published message")
+        .setLabel(published ? "Edit published message" : "Publish with existing message")
         .setStyle(ButtonStyle.Primary),
       publishButton,
     );
 
-    return [editRow, fileRow, ...(published ? [publishRow] : [])];
+    return [editRow, fileRow, ...(showEditPublishedMessage ? [publishRow] : [])];
   }
 
   const message = await interaction.reply({
@@ -267,9 +282,10 @@ export async function handleChallengeWizard(
           existingChallengeId = challenge.id;
         }
 
+        published = false;
         await interaction.editReply({ embeds: [generateWizardEmbed()], components: generateRows() });
         await componentInteraction.reply({
-          content: "Your changes have been saved, you can now safely discard changes.",
+          content: "Your changes have been saved; you can now safely discard changes.",
           ephemeral: true,
         });
 
