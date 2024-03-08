@@ -1,4 +1,4 @@
-import { User } from "@prisma/client";
+import { AttemptedChallenge, User } from "@prisma/client";
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, escapeMarkdown, Message } from "discord.js";
 
 import colors from "../constants/colors.js";
@@ -7,6 +7,22 @@ import { prisma } from "../index.js";
 export function formatRank(rank: number) {
   const emojiMap: Record<string, string> = { 1: "🥇", 2: "🥈", 3: "🥉" };
   return emojiMap[rank.toString()] ?? `${rank}.`;
+}
+
+export function sortLeaderboard(users: (User & { attemptedChallenges: AttemptedChallenge[] })[]) {
+  users.sort((a, b) => {
+    const aSolvedAt = a.attemptedChallenges
+      .filter((c) => c.solvedAt)
+      .sort((a, b) => b.solvedAt!.getTime() - a.solvedAt!.getTime())[0].solvedAt;
+    const bSolvedAt = b.attemptedChallenges
+      .filter((c) => c.solvedAt)
+      .sort((a, b) => b.solvedAt!.getTime() - a.solvedAt!.getTime())[0].solvedAt;
+
+    return (bSolvedAt?.getTime() || 0) - (aSolvedAt?.getTime() || 0);
+  });
+
+  users.sort((a, b) => b.points - a.points);
+  return users;
 }
 
 export function generateMessageOptions(
@@ -61,11 +77,14 @@ export function generateMessageOptions(
 }
 
 export async function updateLeaderboard(message: Message) {
-  const users = await prisma.user.findMany({
-    where: { blacklisted: false, points: { gt: 0 } },
-    orderBy: { points: "desc" },
-    take: 10,
-  });
+  const users = sortLeaderboard(
+    await prisma.user.findMany({
+      where: { blacklisted: false, points: { gt: 0 } },
+      orderBy: { points: "desc" },
+      include: { attemptedChallenges: true },
+      take: 10,
+    }),
+  );
 
   const totalUsers = await prisma.user.count({ where: { blacklisted: false, points: { gt: 0 } } });
 

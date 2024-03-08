@@ -25,6 +25,7 @@ export const configSchema = z.object({
   challengeChannelId: z.string(),
   challengePingRoleId: z.string(),
   staffRoleId: z.string().optional(),
+  firstBloodRoleId: z.string().optional(),
   publishAnonymously: z.boolean(),
   flagAutomod: z.boolean(),
   leaderboardMessages: z

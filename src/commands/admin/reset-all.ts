@@ -40,6 +40,7 @@ export class RestartCommand extends Command {
         "**Are you sure you want perform the following actions?** This command should be used to conclude a round.",
         "- Archive all challenges (disables new submissions, hints will become free)",
         "- Reset the leaderboard and all players' points (lifetime points will not be affected)",
+        "- First Blood roles __will not__ be cleared automatically",
         "An archive of the current leaderboard will be sent in this message.",
       ].join("\n"),
       components: [row],
@@ -79,7 +80,7 @@ export class RestartCommand extends Command {
     );
 
     await interaction.editReply({
-      content: `Reset complete. ${usersArchive.length} users' points have been reset. An archive of the leaderboard has been attached.`,
+      content: `Reset complete. ${usersArchive.length} users' points have been reset. An archive of the leaderboard has been attached. First Blood roles may need to be cleared manually.`,
       components: [],
       files: [
         {

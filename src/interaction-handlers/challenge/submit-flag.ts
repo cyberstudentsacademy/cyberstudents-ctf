@@ -12,7 +12,8 @@ import colors from "../../constants/colors.js";
 import { getSolvedUsers } from "../../functions/create/publishMessage.js";
 import { findOrCreateUser } from "../../functions/findOrCreateUser.js";
 import { logToChannel } from "../../functions/logToChannel.js";
-import { blacklistCache, prisma } from "../../index.js";
+import { sortLeaderboard } from "../../functions/updateLeaderboard.js";
+import { blacklistCache, config, logger, prisma } from "../../index.js";
 import { BLACKLIST_MESSAGE } from "../../preconditions/blacklist.js";
 
 export class SubmitFlagHandler extends InteractionHandler {
@@ -125,6 +126,10 @@ export class SubmitFlagHandler extends InteractionHandler {
       return await modalInteraction.reply({ embeds: [incorrectEmbed], ephemeral: true });
     }
 
+    const isFirstBlood = !(await prisma.attemptedChallenge.count({
+      where: { challengeId: challenge.id, solved: true },
+    }));
+
     const newAttempt = await prisma.attemptedChallenge.upsert({
       where: { challengeId_userId: { challengeId: challenge.id, userId: user.id } },
       update: { solved: true, solvedAt: new Date(), totalAttempts: { increment: 1 } },
@@ -145,10 +150,26 @@ export class SubmitFlagHandler extends InteractionHandler {
 
     await prisma.user.update({ where: { id: user.id }, data: { points: { increment: challenge.points } } });
 
-    const newUsers = await prisma.user.findMany({
-      where: { blacklisted: false, points: { not: 0 } },
-      orderBy: { points: "desc" },
-    });
+    const newUsers = sortLeaderboard(
+      await prisma.user.findMany({
+        where: { blacklisted: false, points: { not: 0 } },
+        include: { attemptedChallenges: true },
+        orderBy: { points: "desc" },
+      }),
+    );
+
+    if (config.firstBloodRoleId?.length && isFirstBlood) {
+      try {
+        if (!interaction.inCachedGuild()) throw new Error("Not in a cached guild.");
+
+        await interaction.member.roles.add(
+          config.firstBloodRoleId,
+          `${user.username} was First Blood in ${challenge.title} (#${challenge.id}).`,
+        );
+      } catch (error) {
+        logger.error(`Failed to add First Blood role to user ${interaction.user.id}`, error);
+      }
+    }
 
     const newRank = newUsers.findIndex((u) => u.id === user.id) + 1;
     let oldRank: number | null = oldUsers.findIndex((u) => u.id === user.id) + 1;
@@ -177,7 +198,17 @@ export class SubmitFlagHandler extends InteractionHandler {
         },
       );
 
-    await modalInteraction.reply({ embeds: [solvedEmbed], ephemeral: true });
+    const firstBloodEmbed = new EmbedBuilder()
+      .setColor(colors.firstBlood)
+      .setTitle("🩸 First Blood")
+      .setDescription(
+        `You were the first to solve **${challenge.title}**! You have been awarded the <@&${config.firstBloodRoleId}> role for this round.`,
+      );
+
+    await modalInteraction.reply({
+      embeds: config.firstBloodRoleId?.length && isFirstBlood ? [solvedEmbed, firstBloodEmbed] : [solvedEmbed],
+      ephemeral: true,
+    });
 
     const solvedAttempts = await prisma.attemptedChallenge.findMany({
       where: { challengeId: challenge.id, solved: true },

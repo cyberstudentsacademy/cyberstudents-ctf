@@ -2,7 +2,7 @@ import { InteractionHandler, InteractionHandlerTypes } from "@sapphire/framework
 import { type ButtonInteraction } from "discord.js";
 
 import { findOrCreateUser } from "../../functions/findOrCreateUser.js";
-import { generateMessageOptions } from "../../functions/updateLeaderboard.js";
+import { generateMessageOptions, sortLeaderboard } from "../../functions/updateLeaderboard.js";
 import { blacklistCache, prisma } from "../../index.js";
 import { BLACKLIST_MESSAGE } from "../../preconditions/blacklist.js";
 
@@ -53,12 +53,15 @@ export class SubmitFlagHandler extends InteractionHandler {
       if (buttonInteraction.customId.startsWith("edit-leaderboard-previous:")) page--;
       else if (buttonInteraction.customId.startsWith("edit-leaderboard-next:")) page++;
 
-      const newUsers = await prisma.user.findMany({
-        where: { blacklisted: false, points: { gt: 0 } },
-        orderBy: { points: "desc" },
-        skip: (page - 1) * 10,
-        take: 10,
-      });
+      const newUsers = sortLeaderboard(
+        await prisma.user.findMany({
+          where: { blacklisted: false, points: { gt: 0 } },
+          orderBy: { points: "desc" },
+          include: { attemptedChallenges: true },
+          skip: (page - 1) * 10,
+          take: 10,
+        }),
+      );
 
       const newTotalUsers = await prisma.user.count({ where: { blacklisted: false, points: { gt: 0 } } });
 

@@ -2,6 +2,7 @@
   "logsChannelId": "",
   "challengePingRoleId": "",
   "staffRoleId": "",
+  "firstBloodRoleId": "",
   "publishAnonymously": false,
   "flagAutomod": false,
   "leaderboardMessages": [{ "channelId": "", "messageId": "" }],

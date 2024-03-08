@@ -17,6 +17,7 @@ export type Colors = {
   fuchsia: ColorResolvable;
   pink: ColorResolvable;
   darkModeBg: ColorResolvable;
+  firstBlood: ColorResolvable;
 };
 
 const colors: Colors = {
@@ -33,6 +34,7 @@ const colors: Colors = {
   fuchsia: "#d946ef", // Fuchsia 500
   pink: "#db2777", // Pink 600
   darkModeBg: "#2b2d31", // Discord dark mode embed background colour
+  firstBlood: "#992d22", // First Blood role color in CSD server
 } as const;
 
 export default colors;
