@@ -18,7 +18,7 @@ export function sortLeaderboard(users: (User & { attemptedChallenges: AttemptedC
       .filter((c) => c.solvedAt)
       .sort((a, b) => b.solvedAt!.getTime() - a.solvedAt!.getTime())[0].solvedAt;
 
-    return (bSolvedAt?.getTime() || 0) - (aSolvedAt?.getTime() || 0);
+    return (aSolvedAt?.getTime() || 0) - (bSolvedAt?.getTime() || 0);
   });
 
   users.sort((a, b) => b.points - a.points);
