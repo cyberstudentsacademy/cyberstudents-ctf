@@ -216,7 +216,7 @@ export class SubmitFlagHandler extends InteractionHandler {
     });
 
     const challengeEmbed = EmbedBuilder.from(interaction.message.embeds[0]);
-    challengeEmbed.spliceFields(3, 1, {
+    challengeEmbed.spliceFields(challengeEmbed.data.fields!.length - 1, 1, {
       name: `Solved (${solvedAttempts.length})`,
       value: `${getSolvedUsers(solvedAttempts)}`,
       inline: true,
