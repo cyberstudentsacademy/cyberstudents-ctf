@@ -1,5 +1,13 @@
 import { MessageLinkRegex } from "@sapphire/discord-utilities";
-import { ActionRowBuilder, ButtonBuilder, ButtonStyle, ChatInputCommandInteraction, EmbedBuilder } from "discord.js";
+import {
+  ActionRowBuilder,
+  ButtonBuilder,
+  ButtonStyle,
+  ChannelType,
+  ChatInputCommandInteraction,
+  EmbedBuilder,
+} from "discord.js";
+import { ThreadAutoArchiveDuration } from "discord.js";
 
 import colors from "../../constants/colors.js";
 import { challengeCache, prisma } from "../../index.js";
@@ -22,6 +30,7 @@ export type ChallengeWizardOptions = {
   published: boolean;
   archived: boolean;
   publishedMessageURL?: string | null;
+  threadChannelId?: string | null;
 };
 
 export function generateEmbed(
@@ -330,6 +339,26 @@ export async function handleChallengeWizard(
         const msg = await challengeChannel.send(generateMessageOptions(challenge, interaction.user));
 
         await prisma.challenge.update({ where: { id: challenge.id }, data: { publishedMessageURL: msg.url } });
+
+        if (msg.channel.type === ChannelType.GuildText && !challenge.threadChannelId) {
+          const thread = await msg.channel.threads.create({
+            name: `${challenge.title} - Solved Discussion (#${challenge.id})`,
+            type: ChannelType.PrivateThread,
+            autoArchiveDuration: ThreadAutoArchiveDuration.OneWeek,
+            invitable: false,
+          });
+
+          const threadEmbed = new EmbedBuilder()
+            .setColor(colors.pink)
+            .setTitle(`${challenge.title} - Solved Discussion`)
+            .setDescription(
+              "Welcome to the solved discussion thread! You can discuss about the challenge here and share your thought process; however, please avoid sharing solutions outside this thread. Threads will be made public after the round concludes.",
+            )
+            .setFooter({ text: `#${challenge.id}` });
+
+          await thread.send({ embeds: [threadEmbed] });
+          await prisma.challenge.update({ where: { id: challenge.id }, data: { threadChannelId: thread.id } });
+        }
 
         if (newInteraction.id !== componentInteraction.id) {
           await newInteraction.update({

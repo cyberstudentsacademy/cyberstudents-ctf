@@ -15,6 +15,8 @@ export async function handleFlagAutomod(message: Message) {
     return;
 
   for (const challenge of challengeCache.values()) {
+    if (message.channelId === challenge.threadChannelId) return;
+
     for (const flag of challenge.flags) {
       if (!message.content.toLowerCase().includes(flag.toLowerCase())) continue;
 

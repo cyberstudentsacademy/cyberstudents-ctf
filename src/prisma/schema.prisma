@@ -56,6 +56,7 @@ model Challenge {
   editedAt            DateTime @default(now()) @map("edited_at")
   published           Boolean
   publishedMessageURL String?  @map("published_message_url")
+  threadChannelId     String?  @map("thread_message_id")
   archived            Boolean  @default(false)
 
   title       String

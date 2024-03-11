@@ -7,6 +7,7 @@ import {
   TextInputBuilder,
   TextInputStyle,
 } from "discord.js";
+import { ChannelType } from "discord.js";
 
 import colors from "../../constants/colors.js";
 import { getSolvedUsers } from "../../functions/create/publishMessage.js";
@@ -223,6 +224,12 @@ export class SubmitFlagHandler extends InteractionHandler {
     });
 
     await interaction.message.edit({ embeds: [challengeEmbed] });
+
+    if (challenge.threadChannelId && interaction.channel?.type === ChannelType.GuildText) {
+      const thread = await interaction.channel.threads.fetch(challenge.threadChannelId);
+
+      if (thread) await thread.members.add(interaction.user.id);
+    }
 
     return await logToChannel(
       "Challenge solved",
