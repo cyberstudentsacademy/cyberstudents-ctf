@@ -66,7 +66,9 @@ export class BlacklistChatInputCommand extends Subcommand {
       (c) => c.title.toLowerCase().includes(value.toLowerCase()) || value.startsWith(`${c.id}`),
     );
 
-    return await interaction.respond(challenges.map((c) => ({ name: `#${c.id} - ${c.title}`, value: `${c.id}` })));
+    return await interaction.respond(
+      challenges.map((c) => ({ name: `#${c.id} - ${c.title}`, value: `${c.id}` })).slice(0, 25),
+    );
   }
 
   public async chatInputCreate(interaction: Subcommand.ChatInputCommandInteraction<"cached">) {
