@@ -39,7 +39,7 @@ model AttemptedChallenge {
   createdAt DateTime  @default(now()) @map("created_at")
   solvedAt  DateTime? @map("solved_at")
 
-  challenge   Challenge @relation(fields: [challengeId], references: [id])
+  challenge   Challenge @relation(fields: [challengeId], references: [id], onDelete: Cascade)
   challengeId Int       @map("challenge_id")
 
   solved        Boolean
