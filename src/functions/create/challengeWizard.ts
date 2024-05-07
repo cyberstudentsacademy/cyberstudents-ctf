@@ -352,7 +352,7 @@ export async function handleChallengeWizard(
             .setColor(colors.pink)
             .setTitle(`${challenge.title} - Solved Discussion`)
             .setDescription(
-              "Welcome to the solved discussion thread! You can discuss about the challenge here and share your thought process; however, please avoid sharing solutions outside this thread. Threads will be made public after the round concludes.",
+              "Welcome to the solved discussion thread! You can discuss about the challenge here and share your thought process; however, please avoid sharing solutions outside this thread.",
             )
             .setFooter({ text: `#${challenge.id}` });
 
