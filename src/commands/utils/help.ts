@@ -34,7 +34,7 @@ export class InviteCommand extends Command {
       .setColor(colors.primary)
       .setAuthor({
         name: "CyberStudents",
-        iconURL: "https://cdn.discordapp.com/avatars/1126157327746211840/0cdcb588f96ec9cfc5d4f9685c8987f4.webp",
+        iconURL: "https://cdn.discordapp.com/avatars/1197358388368121896/21a046461d7f832817b0a330dbbc0a0d.webp",
       })
       .setTitle("Welcome to the CyberStudents CTF")
       .setDescription(
