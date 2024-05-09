@@ -23,10 +23,12 @@ command to get started.
 
 - [x] Uses Discord interactions and components (e.g. slash commands, buttons, modals)
 - [x] Hint request system with points
-- [x] Overall leaderboard and challenge-specific leaderboards
+- [x] Cooldown system for flag submissions
+- [x] Leaderboard for current round
 - [x] Optional anonymous mode
-- [x] Manage challenges and users
+- [x] Manage challenges and users (including blacklist)
 - [x] Flag publishing protection
+- [x] Solved discussion threads
 
 # Installing
 
@@ -35,7 +37,7 @@ To locally install the bot yourself (e.g. if you want to contribute or self-host
 ## Prerequisites
 
 - Node.js 16.11.0 or later
-- Yarn berry (4.1.0)
+- Yarn berry (v4)
 - A Discord application and bot
 - A PostgreSQL database (to run one locally, see [here](https://www.postgresql.org/docs/current/tutorial-install.html))
 
@@ -89,7 +91,8 @@ pm2 start dist/src/index.js
 
 # Contributing & Support
 
-If you need support with the bot, feel free to [contact me by joining my server](https://discord.gg/R2FDvcPXTK).
+If you need support with the bot, feel free to
+[contact GodderE2D on Discord after joining the server](https://discord.gg/R2FDvcPXTK).
 
 If you'd like to contribute to the bot, please review our [code of conduct](CODE_OF_CONDUCT.md) first. If you have a bug
 report, feature request, please [open an issue](https://github.com/cyberstudentsacademy/cyberstudents-ctf/issues). If
