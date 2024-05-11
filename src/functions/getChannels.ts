@@ -4,10 +4,8 @@ import { config, env } from "../index.js";
 
 export function getChallengeChannel(client: Client) {
   const channel = client.channels.cache.get(config.challengeChannelId);
-
-  if (channel?.type !== ChannelType.GuildText && channel?.type !== ChannelType.GuildAnnouncement) {
+  if (channel?.type !== ChannelType.GuildText)
     throw new Error("Challenge channel cannot be found or is not a text channel");
-  }
 
   return channel;
 }
