@@ -37,6 +37,7 @@ export async function handleFlagAutomod(message: Message) {
         .setDescription(
           `${message.author} (\`${message.author.tag}\`) sent a flag from **${challenge.title}** (#${challenge.id}) in ${message.channel}. The message has been deleted.`,
         )
+        .setFooter({ text: `Message ID: ${message.id}` })
         .setTimestamp();
 
       await getLogsChannel(message.client).send({ embeds: [embed] });
